@@ -47,11 +47,11 @@ uint32_t rnd_UniBound32(uint32_t bound) {
 
 float rnd_F() {
   uint32_t value = rnd_R32();
-  return (float)value / (2147483647 + 1.0);
+  return (float)value / (float)UINT32_MAX;
 }
 
 float rnd_Fn(float n) {
-  uint32_t value = rnd_R32();
-  return (float)value / ((float)2147483647 / n);
+
+  return rnd_F() * n;
 }
 #endif // header guard
