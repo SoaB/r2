@@ -30,6 +30,7 @@ Vec2D V2D_Scale(Vec2D v, float scale);
 Vec2D V2D_Multiply(Vec2D v1, Vec2D v2);
 Vec2D V2D_Negate(Vec2D v);
 Vec2D V2D_Divide(Vec2D v1, Vec2D v2);
+Vec2D V2D_DivideVal(Vec2D v1, float val);
 Vec2D V2D_Normalize(Vec2D v);
 Vec2D V2D_Lerp(Vec2D v1, Vec2D v2, float amount);
 Vec2D V2D_Reflect(Vec2D v, Vec2D normal);
@@ -142,6 +143,11 @@ Vec2D V2D_Negate(Vec2D v) {
 
 Vec2D V2D_Divide(Vec2D v1, Vec2D v2) {
   Vec2D result = {v1.x / v2.x, v1.y / v2.y};
+
+  return result;
+}
+Vec2D V2D_DivideVal(Vec2D v1, float val) {
+  Vec2D result = {v1.x / val, v1.y / val};
 
   return result;
 }

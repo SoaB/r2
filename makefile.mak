@@ -1,5 +1,5 @@
 TARGET = main
-HEADFILE = mover.h rnd.h sgi.h simplexNoise.h v2d.h
+HEADFILE = mover.h rnd.h sgi.h v2d.h
 
 WORKDIR = %cd%
 

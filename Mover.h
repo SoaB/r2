@@ -11,20 +11,17 @@ typedef struct Mover {
   Vec2D location;
   Vec2D velocity;
   Vec2D acceleration;
-  float topSpeed;
-  void (*Update)(struct Mover *self, Vec2D *pt);
+  float mass;
+  void (*Update)(struct Mover *self);
   void (*Destroy)(struct Mover *self);
   void (*ChkEdge)(struct Mover *mv, int w, int h);
+  void (*ApplyForce)(struct Mover *mv, Vec2D force);
 } Mover;
 
-static void _update(Mover *mv, Vec2D *pt) {
-  Vec2D dir = V2D_Subtract(*pt, mv->location);
-  dir = V2D_Normalize(dir);
-  dir = V2D_Scale(dir, .5);
-  mv->acceleration = V2D_Clone(dir);
+static void _update(Mover *mv) {
   mv->velocity = V2D_Add(mv->velocity, mv->acceleration);
-  mv->velocity = V2D_Limit(mv->velocity, mv->topSpeed);
   mv->location = V2D_Add(mv->location, mv->velocity);
+  mv->acceleration = V2D_Zero();
 }
 static void _destroy(Mover *self) {
   if (self != NULL) {
@@ -32,28 +29,34 @@ static void _destroy(Mover *self) {
     self = NULL;
   }
 }
+static void _applyForce(Mover *mv, Vec2D force) {
+  Vec2D f = V2D_DivideVal(force, mv->mass);
+  mv->acceleration = V2D_Add(mv->acceleration, f);
+}
 static void _chkEdge(Mover *mv, int w, int h) {
   if ((int)mv->location.x > w) {
-    mv->location.x = 0;
+    mv->velocity.x *= -1;
+    mv->location.x = w;
   } else if ((int)mv->location.x < 0) {
+    mv->velocity.x *= -1;
     mv->location.x = w;
   }
   if ((int)mv->location.y > h) {
-    mv->location.y = 0;
-  } else if ((int)mv->location.y < 0) {
+    mv->velocity.y *= -1;
     mv->location.y = h;
   }
 }
-Mover *NewMover(int w, int h) {
+Mover *NewMover(float m, float x, float y) {
   Mover *mv = (Mover *)malloc(sizeof(Mover));
   if (mv != NULL) {
-    mv->location = V2D_Set((float)rnd_R32n(0, w), (float)rnd_R32n(0, h));
+    mv->location = V2D_Set(x, y);
     mv->velocity = V2D_Zero();
     mv->acceleration = V2D_Zero();
-    mv->topSpeed = 4;
+    mv->mass = m;
     mv->Update = &_update;
     mv->Destroy = &_destroy;
     mv->ChkEdge = &_chkEdge;
+    mv->ApplyForce = &_applyForce;
   }
   return mv;
 }

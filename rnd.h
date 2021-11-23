@@ -15,7 +15,7 @@ uint32_t rnd_R32(void);
 uint32_t rnd_UniBound32(uint32_t bound);
 uint32_t rnd_R32n(uint32_t min, uint32_t max);
 float rnd_F();
-float rnd_Fn(float max, float min);
+float rnd_Fn(float n);
 ///////////////////////////////////////////////////////////////////////
 void rnd_Seed(uint64_t seed, uint64_t seq) {
   rnd_rng.state = 0U;
@@ -50,8 +50,8 @@ float rnd_F() {
   return (float)value / (2147483647 + 1.0);
 }
 
-float rnd_Fn(float max, float min) {
+float rnd_Fn(float n) {
   uint32_t value = rnd_R32();
-  return (float)value * (max - min) / (2147483647 + 1.0) + min;
+  return (float)value / ((float)2147483647 / n);
 }
 #endif // header guard

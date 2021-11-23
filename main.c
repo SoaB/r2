@@ -11,19 +11,19 @@ int main(int argc, char *argv[]) {
   int i;
   rnd_Seed(time(NULL), 33);
   for (i = 0; i < 20; i++) {
-    mvs[i] = NewMover(800, 600);
+    mvs[i] = NewMover(rnd_Fn(5.0) + 0.1, 10, 10);
   }
   sgi_Init(800, 600, "Mover Test");
-  Vec2D pt = {400, 300};
-  int x, y;
+  Vec2D wind = V2D_Set(0.01, 0);
+  Vec2D gravity = V2D_Set(0, 0.1);
   while (!sgi_Done()) {
     sgi_Clear(RGB_Black);
-    sgi_GetMouseState(&x, &y);
-    pt = (Vec2D){(float)x, (float)y};
     for (i = 0; i < 20; i++) {
-      mvs[i]->Update(mvs[i], &pt);
+      mvs[i]->ApplyForce(mvs[i], wind);
+      mvs[i]->ApplyForce(mvs[i], gravity);
+      mvs[i]->Update(mvs[i]);
       mvs[i]->ChkEdge(mvs[i], 800, 600);
-      sgi_Disk((int)mvs[i]->location.x, (int)mvs[i]->location.y, 8, RGB_Green);
+      sgi_Disk((int)mvs[i]->location.x, (int)mvs[i]->location.y, 8, RGB_Yellow);
     }
     sgi_Update();
     sgi_Delay(16);
