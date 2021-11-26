@@ -215,8 +215,9 @@ Vec2D V2D_Limit(Vec2D v, float n) {
   Vec2D rv;
   rv.x = v.x;
   rv.y = v.y;
-  float l = sqrtf((v.x * v.x) + (v.y * v.y));
-  if (n <= l) {
+  float l = (v.x * v.x) + (v.y * v.y);
+  if ((n*n) <= l) {
+	l = sqrtf(l);  
     float ra = n / l;
     rv.x = rv.x * ra;
     rv.y = rv.y * ra;
