@@ -323,4 +323,49 @@ bool sgi_FillRect(int x, int y, int w, int h, RGBA col) {
   return true;
 }
 /////////////////////////////////////////////////////////////////////////////////////
+/*
+SGI Image
+*/
+typedef struct sgi_Image {
+  SDL_Texture *Tex;
+  int w, h;
+  void (*Boundary)(struct sgi_Image *self, int *w, int *h);
+  void (*Draw)(struct sgi_Image *simg, int x, int y, float angle);
+  void (*Destroy)(struct sgi_Image *self);
+} sgi_Image;
+
+static void _sgi_image_destroy(sgi_Image *simg) {
+  if (simg != NULL) {
+    SDL_DestroyTexture(simg->Tex);
+    free(simg);
+    simg = NULL;
+  }
+}
+static void _boundary(sgi_Image *simg, int *w, int *h) {
+  *w = simg->w;
+  *h = simg->h;
+}
+static void _draw(sgi_Image *simg, int x, int y, float angle) {
+  SDL_Rect src = {0, 0, simg->w, simg->h};
+  SDL_Rect dest = {x - simg->w / 2, y - simg->h / 2, simg->w, simg->h};
+  SDL_RenderCopyEx(sgi.Renderer, simg->Tex, &src, &dest, angle, NULL,
+                   SDL_FLIP_NONE);
+}
+sgi_Image *NewSgiImage(char *filename) {
+  sgi_Image *simg = (sgi_Image *)malloc(sizeof(sgi_Image));
+  SDL_Surface *surface = SDL_LoadBMP(filename);
+  if (!surface) {
+    return NULL;
+  }
+  SDL_SetColorKey(surface, SDL_TRUE, 0);
+  simg->w = surface->w;
+  simg->h = surface->h;
+  simg->Tex = SDL_CreateTextureFromSurface(sgi.Renderer, surface);
+  SDL_FreeSurface(surface);
+  SDL_SetTextureBlendMode(simg->Tex, SDL_BLENDMODE_BLEND);
+  simg->Boundary = &_boundary;
+  simg->Draw = &_draw;
+  simg->Destroy = &_sgi_image_destroy;
+  return simg;
+}
 #endif // header guard
